@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!-- xml을 알리는 설정부 -->
+
+<!-- mybatis의 configuration DTD(Document Type Definition) -->
+<!-- - 해당 xml의 문법이 마이바티스 설정을 되어 있다는 것을 정의하는 파일  -->
+<!-- - 없으면 안돌아가고 있으면 자동완성 지원이 되서 문법을 체크해준다. -->
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!-- 설정부의 root -->
+<configuration>
+
+	<!-- DB 정보를 가져오기 위한 properties의 경로 설정 -->
+	<properties resource="driver.properties"/>	
+	
+	<!-- settings : 마이바티스에서 다양한 옵션 시능을 설정할수 있는 영역, 특별할일 없으면 교체X -->
+	<!-- 참고 : https://mybatis.org/mybatis-3/ko/configuration.html -->
+	<settings>
+		<!-- jdbcTypeForNull : JDBC타입을 파라미터에 제공하지 않을때 null값을 처리한 JDBC타입을 명시  -->
+		<setting name="jdbcTypeForNull" value="NULL" />
+		<!-- java에선 카멜, DB에서는 언더바 규칙으로 바꿔주는 옵션, ResultMap 쓰는게 일반적 -->
+		<setting name="mapUnderscoreToCamelCase" value="false"/>
+	</settings>
+	
+	
+	<!-- Mybatis에서 사용할 별칭=Alias를 설정할수 있음 -->
+	<!-- - class의 패키지 포함한 풀 네임을 특정 문자열(alias)로 치환하는 기능 -->
+	<!-- - 주의 : 필드에서는 대부분 Alias를 사용하지 않고 풀패키지 상태로 사용함 -->
+	<!-- - Spring에서는 자동 셋팅 방법 존재함 -->
+	<typeAliases>
+		<typeAlias type="com.multi.mybatis.member.model.vo.Member" alias = "Member"/>
+<!--		<typeAlias type="com.multi.mybatis.board.model.vo.Board" alias = "Board"/>-->
+<!--		<typeAlias type="com.multi.mybatis.board.model.vo.Reply" alias = "Reply"/>-->
+	</typeAliases>
+
+
+	<environments default="development">
+		<environment id="development"> <!-- 하나 DB -->
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${db.driver}" />
+				<property name="url" value="${db.url}" />
+				<property name="username" value="${db.username}" />
+				<property name="password" value="${db.password}" />
+			</dataSource>
+		</environment>
+
+		<!-- 다수가 필요한 경우 environment 여러개 선언 가능한 장소 -->
+		<!-- <environment id="dev2"> 또다른 DB 설정 -->
+		<!-- <transactionManager type="JDBC"/> -->
+		<!-- <dataSource type="POOLED"> -->
+		<!-- <property name="driver" value="com.mysql.cj.jdbc.Driver"/> -->
+		<!-- <property name="url" value="jdbc:mysql://localhost:3306/mybatis"/> -->
+		<!-- <property name="username" value="user"/> -->
+		<!-- <property name="password" value="1234"/> -->
+		<!-- </dataSource> -->
+		<!-- </environment> -->
+	</environments>
+
+
+	<!-- ★★★★★ mapper를 추가하는 곳, Spring에서는 자동추가 예정 -->
+	<mappers>
+		<mapper resource="mappers/member/member-mapper.xml" />
+<!--		<mapper resource="mappers/board/board-mapper.xml" />-->
+	</mappers>
+</configuration>

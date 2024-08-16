@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Hello JSP World!</h1>
+	<hr><br>
+
+	<h3>JSP(Java Server Pages)란?</h3>
+	- HTML 언어 기반으로 Java언어를 결합할수 있는 도구(문법), 컴파일 할때는 java로 변환되어 실행된다.<br>
+	- 기본적으로 HttpServlet을 상속하고, Servlet의 모든 기능을 상속한다. <br>
+	- 단, 주로 View를 그리기 위해 활용됨으로 복잡한 로직(=비지니스 로직)은 Servlet(Controller)에서 처리된다.<br>
+	- MVC2 패턴 구성시 View-JSP, Controller-Servlet, Model-Service, DAO, VO <br>
+	<hr><br>
+
+	<h3>1. JSP 스크립트 요소(Element) 표현법</h3>
+	- 선언문 : <!-- <%! 선언식; %> --> &lt;%! 선언식; %&gt; 멤버변수와 메소드를 선언할수 있다. <br>
+	- 스크립트식 : <!-- <% 자바 문법; %> --> &lt;% 자바문법; %&gt; 로컬 영역에서 사용하는 구문 모두 사용 가능 ★ <br>
+	- 표현식 : <!-- <%= 변수 %> --> &lt;%= 변수 %&gt; 변수에 있는 값을 그대로 출력하고, ; 없이 사용 ★ <br>
+	※ 가급적 스크립트식과 표현식으로 활용하여 간단하게 사용하는 것을 권장 <br>
+	<!--
+	class A {
+		<선언문>
+		void doGet(){
+			<스크립트식>
+			out(<표현식>);
+		}
+	}
+	-->
+	<a href="views/element">스크립트 내용 상세보기</a>
+	<a href="views/element/index.jsp">스크립트 내용 상세보기(JSP로 접근하기)</a>
+	<hr><br>
+
+
+	<h3>2. 지시어 (Directive)</h3>
+	<!--
+	<%@ page language="java" contentType="text/html; charset=UTF-8"
+	 pageEncoding="UTF-8"%>
+	-->
+	<h3>page 태그 : 현재 JSP 페이지 컨테이너에 필요한 각종 속성을 기술하는 태그</h3>
+
+	■ page 태그 주요 속성<br>
+	- language : JSP 페이지 내부에서 사용할 언어를 지정한다. (초기 확장을 위해 만들어지고 안쓴다!)<br>
+	- contentType : 웹브라우저에서 해당 페이지의 프로토콜, 표현식, 인코딩 확인하기 위해 사용<br>
+	- pageEncoding : jsp에서 사용할 인코딩을 표시함 -> java 컴파일 용도 및 전송용<br>
+	- import : 자바의 import와 같이 외부 class를 로드할 때 사용됨 <br>
+	  ※ Tip, 자동완성 방법 추천 : 기존 단축키 먹히지 않음으로 Class 이름 끝에 자동완성을 쓰면 완성됨<br>
+	- errorPage : JSP 페이지에서 예외가 발생한경우 처리할 페이지를 지정할 수 있다.<br>
+	- isErrorPage : 자신이 에러페이지라는 것을 알리는 구문<br>
+
+	<h3>include 태그 : JSP 페이지 내부에서 다른 JSP나 HTML페이지를 로드할때 사용하는 지시어 헤더, 풋터 활용</h3>
+	<h3>taglib 태그 : JSP 태그 외에 확장할수 있는 태그를 import 할때 사용, ex) 액션태그, EL, JSTL</h3>
+
+	<h3>에러 페이지 설정법 : web.xml -> error-page 정의 필요</h3>
+	<!--
+	<error-page>
+		<error-code>404</error-code>
+		<location>/views/error/error404.jsp</location>
+	</error-page>
+	-->
+	<a href="views/directive">지시어 실습</a>
+	<hr><br>
+
+	<h3>3. 내장객체</h3>
+	 - JSP에서 자바 코드를 생성할때 자동으로 선언 시키는 멤버변수 또는 로컬변수를 내장객체라 말한다. <br>
+	 - JSP 코드에서 별도로 import나 선언 없이 사용 됨<br><br>
+
+	■ 내장객체<br>
+	- request : Client의 요청 내용을 담고 있는 객체 <br>
+	- response : Client에게 응답할 내용을 담을수 있는 객체 <br>
+	- session : 브라우저 ID를 통해 사용자의 고유정보를 담을수 있는 객체 <br>
+	- out : html을 출력할수 있는 객체, response.getPrinter()와 동일 <br>
+	- application : Context의 변수 버전으로 Attribute 저장에 활용됨 (잘 안씀) <br>
+	- page : 현재 JSP 페이지 내에서만 사용할수 있는 참조변수 (page = this)<br>
+	- pageContext : JSP 페이지에 관련된 변수를 관리하거나 제어권을 다른페이지로 넘길때 활용<br><br>
+	<a href="views/objects">내장객체 실습</a>
+	<hr><br>
+
+
+	<h3>4. JSP 영역 객체</h3>
+	- JSP에서 제공하는 내장 객체 중 pageContext, request, session, application 객체들은 해당 <br>
+	- 객체간 유효한 범위(Scope)를 가지며, 속성값(Attribute)를 통해 사용자 데이터를 공유 할수 있다.<br><br>
+
+	■ 영역객체 종류<br>
+	- Page Scope : pageContext를 통해 접근, 페이지가 웹브라우저에 살아 있는 동안 유효 (로컬 객체와 같음)<br>
+	- Request Scope : request를 통해 접근, 웹브라우저의 요청을 처리하는 동안 유효(페이지 이동도 가능)<br>
+	- Session Scope : session를 통해 접근, 사용자가 지정한 세션의 생명주기 동안 유효, 브라우저 종료까지 유효<br>
+	- Application Scope : application통해 접근, 웹 어플리케이션(WAS, 서버)가 실행되는 동안 유효 = context<br>
+	※ 위에서 아래로 내려갈수록 긴 생명주기를 가짐 <br><br>
+	- Cookie(번외) : cookie를 통해 접근, 브라우저가 닫혀도 쿠키 시간까지 유효<br><br>
+	<a href="views/scope">Scope 실습</a>
+
+	<br><br><br><br><br><br><br><br>
+
+
+</body>
+</html>

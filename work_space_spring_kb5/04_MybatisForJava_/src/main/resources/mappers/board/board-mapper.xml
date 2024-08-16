@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	동적 쿼리 (Dynamic Query)란?
+	- 사용자가 요구하는 기능에 따라 쿼리가 추가 되거나 변경이 가능한 쿼리
+	- if, foreach문을 통해 논리적으로 변경되는 쿼리
+    - 검색 기능(WHERE)을 만들때 가장 많이 활용 ex) SELECT + 카테고리 검색, SELECT + 컬럼별 키워드 검색
+
+    - 장점 : 하나의 쿼리 문장으로 다양한 기능을 대처할 수 있음 -> 실제 만드는 쿼리문 적어짐
+    - 단점 : 보안상 이슈가 발생할수 있는 여지가 있다. (SQL injection)
+            DB 엔진에서 파싱처리할때 Pooling이 되지 않아 DB 성능이 떨어진다.
+-->
+
+<!--
+	정적 쿼리 (Static Query)란? - 프로시저 + SQL 스타일
+	 - 쿼리문이 고정적으로 사용되는 일반적 적인 경우 (WHERE절의 인자의 값은 변경해도 고정으로 판단한다)
+	 - 장점 : 보안적 이슈가 없고, DB 엔진에 Pooling이 가능함으로 DB 성능이 좋다.
+	 - 단점 : 복잡한 서칭의 케이스의 경우 쿼리문이 많아지거나 프로시저를 통해 해결해야한다.
+	 -> 성능저하나 복잡성이 올라감
+ -->
+
+<mapper namespace="boardMapper">
+
+    <!-- Join문을 사용하는 ResultMap을 사용하는 예시 -->
+    <!-- - 'M,' 'B.'에 해당하는 별칭은 생략해도 된다. -->
+    <resultMap type="com.multi.mybatis.board.model.vo.Board" id="boardListResultMap">
+        <result property="bno" 			column="bno"/>
+        <result property="title" 		column="title"/>
+        <result property="id" 			column="id"/>
+        <result property="readCount" 	column="readcount"/>
+        <result property="content" 		column="content"/>
+        <result property="type" 		column="type"  />
+        <result property="createDate" 	column="create_date"/>
+        <result property="modifyDate" 	column="modify_date"/>
+    </resultMap>
+
+    <!-- 리플 mapping용 -->
+    <resultMap type="com.multi.mybatis.board.model.vo.Reply" id="boardReplyResultMap">
+        <result property="rno" column="rno"/>
+        <result property="bno" column="bno"/>
+        <!--        <result property="mno" column="mno"/>-->
+        <result property="id" column="id"/>
+        <result property="content" column="content"/>
+        <result property="createDate" column="create_date"/>
+        <result property="modifyDate" column="modify_date"/>
+    </resultMap>
+
+
+
+    <!-- 게시글 상세보기 -->
+    <!--  - board 정보와 reply정보(=컬랙션)를 한번에 객체로 맵핑 시키는 방법 -->
+    <!--  extends : 상속을 통해 부모의 맵핑정보를 자식이 사용하는 문법 -->
+    <resultMap type="Board" id="boardDetailResultMap" extends="boardListResultMap">
+        <!-- 		<result property="no" 			column="NO"/> -->
+        <!-- 		<result property="title" 		column="TITLE"/> -->
+        <!-- 		<result property="id" 			column="ID"/> -->
+        <!-- 		<result property="readcount" 	column="READCOUNT"/> -->
+        <!-- 		<result property="content" 		column="CONTENT"/> -->
+        <!-- 		<result property="type" 		column="TYPE"/> -->
+        <!-- 		<result property="createDate" 	column="CREATE_DATE"/> -->
+        <!-- 		<result property="modifyDate" 	column="MODIFY_DATE"/> -->
+
+        <!-- Reply List를 추가 하는 법 -->
+        <!-- property : 멤버변수 명 -->
+        <!-- javaType : 컬랙션 명칭 -->
+        <!-- resultMap : 맵핑할 맵 -->
+        <!-- columnPrefix : 컬럼명이 겹칠 경우 접두어로 설정하는 문구 반드시 as 처리 필요-->
+        <collection property="replies"
+                    javaType="arrayList"
+                    resultMap="boardReplyResultMap"
+                    columnPrefix="r_"
+        />
+    </resultMap>
+
+
+
+    <!-- SELECT문 시작! -->
+    <!-- 1. SELECT문에서 Writer, Title, Content를 조회할수 있는 동적쿼리 실습 -->
+
+    <!-- 1.1 if문을 통해 동적쿼리 ★★★★★ -->
+    <!-- 특징 : WHERE절을 일반적으로 WHERE 1=1로 시작하고 다른 쿼리는 AND절로 시작해서 쿼리 완성 -->
+    <!-- ※주의점 : AND절과 OR절이 있으면 우선순위 문제가 발생할수 있음! -->
+    <select id="selectBoardList" parameterType="map" resultMap="boardListResultMap">
+        SELECT
+        b.bno, b.title, m.id, b.readcount,
+        b.content, b.type, b.create_date, b.modify_date
+        FROM board b
+        JOIN member m on(b.mno = m.mno)
+        <!--        WHERE 1=1 -->
+        WHERE b.status = 'Y'
+        <if test="title != null">
+            AND b.title LIKE '%${title}%'
+        </if>
+        <if test="content != null">
+            AND b.content LIKE '%${content}%'
+        </if>
+        <if test="writer != null">
+            AND m.id LIKE '%${writer}%'
+        </if>
+        ORDER BY b.bno DESC
+    </select>
+
+
+    <!-- 1.2 <where>절로 동적쿼리는 만드는 방법 ★★★ -->
+    <select id="selectBoardList2" parameterType="map" resultMap="boardListResultMap">
+        SELECT
+        b.bno, b.title, m.id, b.readcount,
+        b.content, b.type, b.create_date, b.modify_date
+        FROM board b
+        JOIN member m ON(b.mno = m.mno)
+
+        <!-- where 절 사용시 자동으로 where절을 붙여주고 뒤에 AND OR로 시작하는 경우 자동 삭제 -->
+        <where>
+            <if test="id != null">
+                AND m.id LIKE '%${id}%'
+            </if>
+            <if test="title != null">
+                AND b.title LIKE '%${title}%'
+            </if>
+            <if test="content != null">
+                AND b.content LIKE '%${content}%'
+            </if>
+            AND b.status = 'Y'
+        </where>
+        ORDER BY b.bno DESC
+    </select>
+
+    <!-- 1.3 <trim> 다중 <if>문을 통한 문법 - where절의 원형 -->
+    <select id="selectBoardList3" parameterType="map" resultMap="boardListResultMap">
+        SELECT
+        b.bno, b.title, m.id,  b.readcount,
+        b.content, b.type, b.create_date, b.modify_date
+        FROM board b
+        JOIN member m ON(m.mno = b.mno)
+
+        <!-- prefix : 접두어 -->
+        <!-- prefixOverrides : 접두어 이후에 가장 앞에 있으면 삭제될 문장 -->
+        <!-- suffix : 접미어 -->
+        <!-- suffixOverrides : 접미어 앞에 있으면 삭제될 문장 -->
+        <trim prefix="WHERE"  prefixOverrides="AND|OR" >
+            <if test="id != null">
+                and m.id LIKE '%${id}%'
+            </if>
+            <if test="title != null">
+                and b.title LIKE '%${title}%'
+            </if>
+            <if test="content != null">
+                and b.content LIKE '%${content}%'
+            </if>
+            AND b.status = 'Y'
+        </trim>
+        ORDER BY b.bno DESC
+    </select>
+
+
+    <!-- page 처리 위한 count 세는 동적쿼리 -->
+    <select id="selectBoardCount" parameterType="com.multi.mybatis.board.model.vo.BoardForm" resultType="int">
+        SELECT
+        COUNT(*)
+        FROM board b
+        JOIN member m ON(b.mno = m.mno)
+        WHERE b.status = 'Y'
+        <if test="title != null">
+            AND b.title LIKE '%${title}%'
+        </if>
+        <if test="content != null">
+            AND b.content LIKE '%${content}%'
+        </if>
+        <if test="writer != null">
+            AND m.id LIKE '%${writer}%'
+        </if>
+    </select>
+
+
+    <!-- page list를 반환하는 쿼리 -->
+    <select id="selectBoardListForPage" parameterType="com.multi.mybatis.board.model.vo.BoardForm"
+            resultType="int">
+        SELECT
+        b.bno, b.title, m.id, b.readcount,
+        b.content, b.type, b.create_date, b.modify_date
+        FROM board b
+        JOIN member m ON(b.mno = m.mno)
+        WHERE b.status = 'Y'
+        <if test="title != null">
+            AND b.title LIKE '%${title}%'
+        </if>
+        <if test="content != null">
+            AND b.content LIKE '%${content}%'
+        </if>
+        <if test="writer != null">
+            AND m.id LIKE '%${writer}%'
+        </if>
+        ORDER BY b.bno DESC
+        <!--   pageInfo.getLitLimit()      pageInfo.getOffset()   -->
+        LIMIT ${pageInfo.listLimit} OFFSET ${pageInfo.offset}
+    </select>
+
+
+    <!-- 1.4 <choose>, <when>, <otherwise>  -->
+    <!--  - ※ 주의 : 반드시 where절이 앞에 있어야 한다.  -->
+    <select id="selectBoardList4" parameterType="map" resultMap="boardListResultMap">
+        SELECT
+        b.bno, b.title, m.id, b.readcount, b.content,
+        b.type, b.create_date, b.modify_date
+        FROM board b
+        JOIN member m ON(m.mno = b.mno)
+        WHERE b.status = 'Y'
+        <choose>
+            <when test="id != null">
+                AND M.ID LIKE '%${id}%'
+            </when>
+            <when test="title != null">
+                AND B.TITLE LIKE '%${title}%'
+            </when>
+            <when test="content != null">
+                AND B.CONTENT LIKE '%${content}%'
+            </when>
+            <otherwise>
+                <!-- 상위 조건에 해당되지 않을때의 조건 -->
+            </otherwise>
+        </choose>
+        ORDER BY B.BNO DESC
+    </select>
+
+    <!-- 2. 반복문을 통한 동적 쿼리 생성법 -->
+    <!-- type 컬럼 : 게시글의 종류를 의미 (ex: B1:일반글, B2:공지, B3:비밀글, B4:질문 ... ) -->
+    <!-- 사용처 : 카데고리 선택하는 기능을 만들때 사용함,
+            ex) 브랜드 선택 : 나이키, 아디다스 ... 20개 중 10개 선택 -->
+
+    <select id="selectBoardListByTypeFilters" parameterType="map" resultMap="boardListResultMap">
+        SELECT
+        b.bno, b.title,  m.id, b.readcount, b.content,
+        b.type, b.create_date,  b.modify_date
+        FROM board b
+        JOIN member m ON(b.mno = m.mno)
+        WHERE b.status = 'Y'
+        <!-- 		AND B.TYPE IN ('B1','B2','B3') : 반복할 구문의 원본 -->
+        <!-- foreach 문법 설명 -->
+        <!-- collection : 필터값을 뽑아올 객체의 이름, 사용자가 지정한 컬랙션의 이름 -->
+        <!-- index : for문의 순서를 표시할 문자, 0부터 시작 (옵션) -->
+        <!-- item : 컬랙션에서 뽑아올 객체의 이름 -->
+        <!-- open : 반복문의 시작할 문자 (옵션) -->
+        <!-- separator : 반복문의 중간에 삽입 될 문자(구분자) (옵션) -->
+        <!-- close : 반복문의 끝에 삽입 될 문자(옵션) -->
+        <if test="filterList != null">
+            <!--         ('B1','B2','B3')-->
+            AND b.type IN
+            <foreach item="item" collection="filterList" index="i"
+                     open="(" close=")" separator=",">
+                #{item}
+                <!--             index를 출력할때는 ${i}로 가능하다.-->
+            </foreach>
+        </if>
+    </select>
+
+
+    <!-- 3. 복잡한 JOIN문 사용하는 방법 - 게시글 + 리플리스트 상세 조회하는 방법 -->
+    <!-- 리플의 갯수대로 게시물 정보를 조회함으로 게시물이 길면 성능적으로 문제가 발생할수 있다. -->
+    <select id="selectBoardByNo" parameterType="int" resultMap="boardDetailResultMap">
+        SELECT
+        <!-- 게시글 조회 시작 -->
+        b.bno,
+        b.title,
+        m.id,
+        b.readcount,
+        b.content,
+        b.type,
+        b.create_date,
+        b.modify_date,
+        <!-- 게시글 조회 끝 -->
+        <!-- 리플 시작 -->
+        <!-- r_은 컬럼명이 겹침으로 prefix(접두어)로 구분하는 방법을 제공 -->
+        r.rno as r_rno,
+        r.bno as r_bno,
+        r.content as r_content,
+        m2.id as r_id,
+        r.create_date as r_create_date,
+        r.modify_date as r_modify_date
+        <!-- 리플 끝 -->
+        FROM board b
+        JOIN member m ON(b.mno = m.mno)
+        LEFT OUTER JOIN reply r ON(b.bno = r.bno)
+        LEFT OUTER JOIN member m2 ON(R.mno = m2.mno)
+        WHERE b.status = 'Y'
+        AND b.bno = #{boardNo}
+    </select>
+</mapper>

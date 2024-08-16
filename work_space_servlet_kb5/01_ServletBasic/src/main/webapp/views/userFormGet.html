@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>1. 사용자 정보 get방식 처리하는 Form</h1>
+	<form action="/ServletBasic_war_exploded/method.do" method="get">
+		<!-- 
+			html 자주 사용하는 속성의 용도 정리
+			id : javascript에서 특정 태그를 불러올때 주로 사용하는 방법, 중복 불가!
+			class : css 적용할때 사용하는 속성, 중복해서 사용 가능
+			name : 서버에서 파라메터를 식별할때 사용하는 속성, 중복 가능 -> 특수한 처리가 필요
+		 -->
+		이름 : <input type="text"  name="name"><br>
+		나이 : <input type="text" name="age"><br>
+		성별 : <input type="radio" name="gender" value="남성">남성
+			  <input type="radio" name="gender" value="여성">여성 <br>
+		신장 : <input type="range" name="height" min="120" max="200"><br>
+		취미 : <input type="checkbox" name="hobby" value="축구">축구
+			  <input type="checkbox" name="hobby" value="야구">야구 
+			  <input type="checkbox" name="hobby" value="테니스">테니스 
+			  <input type="checkbox" name="hobby" value="게임">게임 
+			  <input type="checkbox" name="hobby" value="음악감상">음악감상 
+		<br><br>
+		<input type="submit" value="전송">
+		<input type="reset" value="리셋">
+	</form>
+	<!-- http://localhost/ServletBasic/method.do?name=%ED%99%8D%EA%B8%B8%EB%8F%99&age=31&gender=%EB%82%A8%EC%84%B1&height=160&hobby=%EC%95%BC%EA%B5%AC&hobby=%ED%85%8C%EB%8B%88%EC%8A%A4 -->
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+
+	<!-- -->
+
+
+	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
+	<!-- 스프링에서 활용할 root-context.xml을 로드하는 곳 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+	</context-param>
+	
+	<!-- Creates the Spring Container shared by all Servlets and Filters -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+
+
+	<!-- DispatcherServlet (Spring의 존재하는 유일한 Servlet) -->
+	<!-- : 모든 사용자의 request를 받아 필요한 핸들러 메소드를 호출 시켜주는 서블릿 -->
+	<!-- ※ 주의 : 기술적으로 추가적인 서블릿이 생성 가능하나 절대 생성하지 않는다! -->
+	<!-- Processes application requests -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<!-- Processes -->
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+
+
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+
+
+	<!-- 1. 인코딩 셋팅 편리하게 설정하는 방법 -->
+	<!--  - Spring에서 제공하는 필터를 통해 간편하게 설정할 수 있음 -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- 2. Session-config web.xml에서 세션에 대한 설정도 가능합니다. -->
+	<!-- Session 시간설정 (단위:분) -->
+	<session-config>
+		<session-timeout>180</session-timeout>
+	</session-config>
+
+	<!-- 3. error-page 에러코드에 따른 에러페이지를 설정 가능 -->
+	<!-- <error-page>
+           <error-code>401</error-code>
+           <location>/resources/commons/error/serverError.jsp</location>
+        </error-page> -->
+
+	<!-- 4. Welcome-file-list 어플리케이션 요청 시 시작파일을 지정할 수 있음 -->
+	<!-- <welcome-file-list>
+           <welcome-file>/home/home.do</welcome-file>
+        </welcome-file-list> -->
+
+
+</web-app>

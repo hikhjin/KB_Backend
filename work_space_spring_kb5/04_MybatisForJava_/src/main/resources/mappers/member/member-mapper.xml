@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- mapper : mapper임을 알리는 태그의 root -->
+<!-- namespace : dao나 서비스에서 호출할 mapper의 이름 -->
+<!-- ※ 향후 dao를 쓰지 않고 Class로 바로 변경되는 방법이 있기 때문에 자신의 프로젝트 패키지룰을 따를것 -->
+<!-- 지금은 단축시킬 예정 -->
+<mapper namespace="memberMapper">
+    <!-- 이곳이 쿼리를 작성할 영역 -->
+
+    <!-- resultMap 작성 영역 -->
+    <!-- resultMap : DB의 테이블과 Java의 객체간의 이름이 맞지 않은 경우 mapping 시켜주는 기능 -->
+    <!-- ※ 만일 완벽하게 일치하는 경우 별도의 선언 하지 않음!! -->
+    <!-- type : 패키지명을 포함한 풀네임(VO) 활용(표준), 단 Alias선언 시 단축 가능!(잘 안씀) -->
+    <!-- id : 아래 mapper에서 사용할 별칭 -->
+<!--    <resultMap id="memberResultMap" type="Member">-->
+    <resultMap id="memberResultMap" type="com.multi.mybatis.member.model.vo.Member">
+        <!--id = pk(기본키)로 지정할수 있으나 없어도 문제 없음!-->
+        <id property="mno" column="mno"/>
+        <!-- result, 일반 컬럼값 매핑하는 태그, property는 java 멤버변수명, column DB 컬럼명 -->
+        <result property="mno" column="mno"/>
+        <result property="id" column="id"/>
+        <result property="password" column="password"/>
+        <result property="role" column="role"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="address" column="address"/>
+        <result property="hobby" column="hobby"/>
+        <result property="status" column="status"/>
+        <result property="enrollDate" column="enroll_date"/>
+        <result property="modifyDate" column="modify_date"/>
+    </resultMap>
+
+    <!-- 쿼리 태그 -->
+    <!-- resultType : 리턴되는 결과의 type-->
+    <select id="selectCount" resultType="long">
+       SELECT COUNT(*) FROM member
+    </select>
+
+    <!-- sql 태그 : 쿼리의 일부를 미리 작성하여 아래 쿼리 태그에 주입하는 방법-->
+    <!-- select문과 where문에서도 활용되며 필드에서 정말 자주 볼수 있는 문장-->
+    <!-- ※ 쿼리의 가독성이 떨어짐으로 숙련되지 않은 경우 활용 비권장!-->
+    <sql id="selectAllSQL">
+        SELECT
+            mno, id, password, role, name,
+            age, phone, email, address, hobby,
+            status, enroll_date, modify_date
+        FROM member
+    </sql>
+    <sql id="selectAllSQL2">
+        SELECT * FROM ${tableName}
+    </sql>
+
+    <!-- 멤버의 전체 가져오는 쿼리, 필드에서는 컬럼명 명시가 FM -->
+    <!-- 객체를 리턴값을 값으로 받을때는 두가지 패턴 존재 -->
+    <!-- 1. 컬럼명과 DB명칭이 일치하는 경우 = reulstMap이 존재하지 않을때, 객체패키지명이나 별명사용 -->
+    <!--     -> resultType에서 객체명이나 별명 명시하면 끝난다. -->
+    <!-- 	<select id="selectAll" resultType="Member"> -->
+    <!-- 2. 일치하지 않아 resultMap이 존재할때 -->
+    <!--     -> resultMap으로 resultMap의 이름 명시 -->
+    <select id="selectAll" resultMap="memberResultMap">
+<!--        <include refid="selectAllSQL"/>-->
+        SELECT
+            mno, id, password, role, name,
+            age, phone, email, address, hobby,
+            status, enroll_date, modify_date
+        FROM member
+    </select>
+
+    <!-- id로 한명만 찾는 쿼리 -->
+    <!-- 외부에서 인자를 주입하는 방법 -->
+    <!-- parameterType : 외부에서 주입될 객체의 type(String, int, VO=Member, map) -->
+    <!-- 표현법 2가지 -->
+    <!-- 1. #{인자} : type에 따라 ''(코테이션) 처리를 자동으로 지원하는 방법 ★★★ -->
+    <!-- 2. ${인자} : 텍스트가 그냥 주입되는 방법, 자동처리가 필요 없을때 사용! ★ -->
+    <select id="selectMember" resultMap="memberResultMap" parameterType="string">
+        <!--        <include refid="selectAllSQL"/>-->
+        <include refid="selectAllSQL2">
+            <property name="tableName" value="member"/>
+        </include>
+        WHERE id = #{id}
+    </select>
+
+
+    <select id="selectMemberByParam" resultMap="memberResultMap" parameterType="member">
+<!--        SELECT * FROM MEMBER-->
+<!--        WHERE name LIKE '%${name}%' AND age <![CDATA[AGE <= #{age}]]>-->
+        SELECT * FROM MEMBER
+        WHERE name LIKE CONCAT('%',#{name},'%') AND <![CDATA[age <= #{age}]]>
+    </select>
+
+
+    <!-- Insert문 -->
+    <insert id="insertMember" parameterType="member">
+        INSERT INTO MEMBER (
+            mno, id, password, role, name,
+            phone, email, address, hobby, status,
+            enroll_date, modify_date
+        ) VALUES(
+            DEFAULT, #{id}, #{password}, DEFAULT, #{name},
+            #{phone}, #{email}, #{address}, #{hobby}, DEFAULT,
+            DEFAULT, DEFAULT
+        );
+    </insert>
+
+    <!-- Update 문 -->
+    <update id="updateMember" parameterType="member">
+        UPDATE MEMBER
+        SET
+            name=#{name},
+            phone=#{phone},
+            email=#{email},
+            address=#{address},
+            hobby=#{hobby},
+            modify_date=CURRENT_TIMESTAMP
+        WHERE mno = #{mno}
+    </update>
+
+    <!-- Delete문 -->
+    <delete id="deleteMember" parameterType="long">
+        DELETE FROM MEMBER WHERE mno = #{mno}
+    </delete>
+
+</mapper>

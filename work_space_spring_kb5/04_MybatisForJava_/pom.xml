@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.multi</groupId>
+    <artifactId>04_MybatisForJava</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <!-- Major.Minor.Service : 버전 쓰는 방법 -->
+    <!-- Major : 1.0 상용 첫버전으로 기입하고, 프로젝트 큰 변화가 있을때마다 올라가는 중요한 버전 -->
+    <!-- Minor : 기능의 부분 변경이나 페이지가 추가 되었지만 부분 변화에 가까울때 올라가는 Minor -->
+    <!-- Service : 버그나 기타 오류를 수정하기 위한 bug fix 버전 -->
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+
+
+    <!-- 외부 라이브러리 종속성 추가하는 곳 -->
+    <dependencies>
+        <!-- lombok 추가 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Mybatis 추가 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.6</version>
+        </dependency>
+
+        <!-- mysql 추가 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.31</version>
+        </dependency>
+
+        <!-- log4j -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+
+    </dependencies>
+
+
+</project>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Get 방식과 Post 방식 차이점 실습하기</h1>
+	
+	<h3>1. Get 방식 전송</h3>
+	<div>- URL을 통해 파라메터를 전달하는 방법 ex) test.com?name1=value1&name2=value2 .... </div>
+	<div>- 활용 : 일반적인 페이징 탐색이나 대부분의 요청은 get 방식으로 처리 된다.</div>
+	<div>- 장점 : 히스토리가 남아 페이지 탐색에 적합하고, 간결하고 내부적으로 처리가 빠르다.</div>
+	<div>- 단점 : 네트워크 경로에 url 노출됨으로 보안에 취약하고 길이 제한이 있다. (2kb)</div>
+	<br>	
+	
+	<h3>로그인</h3>
+	<!-- method를 지정하지 않은 경우는 default로 get이 된다. -->
+	<form action="../login.do" method="get">
+		ID : <input type="text" name="id"><br>
+		PW : <input type="text" name="pwd"><br>
+		<input type="submit" value="로그인">
+	</form>
+	<br>
+	<a href="../login.do?id=test&pwd=1234">a태그를 통한 데이터 전달 예시</a>
+	<hr><br>
+	
+	<h3>2. Post 방식 전송</h3>
+	<div>- URL과 요청 데이터를 분리(URL, Body)하여 전송하는 방법</div>
+	<div>- 활용 : 사용자의 입력 데이터를 처리할때 주로 사용한다. (로그인, 회원가입, 게시판 글쓰기 ...)</div>
+	<div>- 장점 : 데이터 크기 제한이 없다. 보안적으로 get 방식보다 안전하다. *(https까지 붙어야 안전하다!)</div>
+	<div>- 단점 : 처리가 복잡하다.(서블릿에서만, 스프링에서는 차이 없다.) 히스토리가 안남아 탐색에는 부적합하다.</div>
+	<br>	
+	
+	<h3>로그인</h3>
+	<form action="../login.do" method="post">
+		ID : <input type="text" name="id"><br>
+		PW : <input type="text" name="pwd"><br>
+		<input type="submit" value="로그인">
+	</form>
+	<br>
+	
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

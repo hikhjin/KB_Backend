@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/assignment/240731/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_spring_kb5/01_SpringMVC/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_spring_kb5/02_SpringDI_XML/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_spring_kb5/04_MybatisForJava_/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_spring_kb5/03_SpringDI_Annotation/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_servlet_kb5/04_JSP/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_servlet_kb5/02_Data/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_servlet_kb5/05_Filter/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_servlet_kb5/06_EL_JSTL/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_servlet_kb5/07_HelloMVC2/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_servlet_kb5/01_ServletBasic/pom.xml" />
+        <option value="$PROJECT_DIR$/work_space_servlet_kb5/03_SessionCookie/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="openjdk-21" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>

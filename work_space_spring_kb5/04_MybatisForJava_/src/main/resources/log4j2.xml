@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+
+	<!-- log의 출력 위치를 선언 : 콘솔, 파일, Outputstream=socket, DB -->
+	<Appenders>
+		<!-- 콘솔 메세지 출력할때 사용하는 포멧 SYSTEM_OUT, SYSTEM_ERR -->
+		<Console name="CONSOLE" target="SYSTEM_OUT">
+			<!-- Log format -->
+			<!--  <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>  -->
+		 	<PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{3} %M - %msg - %n" />
+		</Console>
+
+		<!-- log를 파일로 출력할때 사용한다. -->
+		<File name="mybatisDebug" fileName="./log/mybatisDebug.log">
+			<PatternLayout
+				pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{3} %M - %msg - %n" />
+		</File>
+		
+		<File name="mybatisInfo" fileName="./log/mybatisInfo.log">
+			<PatternLayout
+				pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{3} %M - %msg - %n" />
+		</File>
+		
+		<!-- 그룹핑 셋팅 -->
+		<Async name="DEBUG_GROUP">
+			<AppenderRef ref="CONSOLE" />
+			<AppenderRef ref="mybatisDebug" />
+		</Async>
+
+	</Appenders>
+	
+	<Loggers>
+		<!-- 일반적인 로그 정책을 셋팅 -->
+		<!-- 일반적으로 보여줄 Level 셋팅 -->
+		<!-- OFF < FATAL < ERROR < WARN < INFO < DEBUG < TRACE < ALL -->
+		<Root level="OFF">
+			<AppenderRef ref="DEBUG_GROUP" />
+		</Root>
+		
+		<!-- 추가적인 정책 셋팅 -->
+		<!-- name을 통해 패키지 레벨단위로 로그 관리 가능! -->
+		<Logger name="com.multi.mybatis.member" level="INFO" additivity="true">
+			<AppenderRef ref="mybatisInfo"/>
+		</Logger>
+		
+		<Logger name="com.multi.mybatis.board" level="INFO" additivity="true">
+			<AppenderRef ref="mybatisInfo"/>
+		</Logger>
+		
+	</Loggers>
+	
+</Configuration>

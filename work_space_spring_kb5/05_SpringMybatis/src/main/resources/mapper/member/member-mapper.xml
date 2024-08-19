@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!-- 실질적인 SQL이 들어가는 Mapper -->
+<mapper namespace="memberMapper">
+
+	<resultMap type="com.multi.mybatis.member.model.vo.Member" id="memberResultMap">
+		<result property="id" column="id" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="age" column="age" />
+		<result property="gender" column="gender" />
+		<result property="phone" column="phone" />
+		<result property="address" column="address" />
+		<result property="email" column="email" />
+		<!-- Hobby 처리 이슈 -->
+		<!-- java : 배열, ["축구", "야구", "배구"] -->
+		<!-- db : 문자열, "축구,야구,배구" -->
+		<result property="hobby" column="HOBBY" typeHandler="com.multi.mybatis.common.StringToStringArrayTypeHandler" />
+		<result property="enrollDate" column="enroll_date" />
+	</resultMap>
+	
+	<insert id="insertMember" parameterType="com.multi.mybatis.member.model.vo.Member" >
+		INSERT INTO member VALUES(
+		    #{id}, #{password}, #{name}, #{age}, #{gender},
+		    #{phone}, #{address}, #{email}, #{hobby, typeHandler = com.multi.mybatis.common.StringToStringArrayTypeHandler}
+		    , default
+		)
+	</insert>
+	
+	<select id="selectMemberAll" resultMap="memberResultMap">
+		SELECT * FROM member;
+	</select>
+	
+	
+	<select id="selectMemberById" resultMap="memberResultMap" parameterType="string">
+		SELECT * FROM member WHERE id = #{id}
+	</select>
+	
+	
+	<delete id="deleteMember" parameterType="string" >
+		DELETE FROM member WHERE id = #{id}
+	</delete>
+
+
+</mapper>

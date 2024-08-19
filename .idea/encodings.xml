@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/assignment/240731/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/assignment/240731/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/01_ServletBasic/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/01_ServletBasic/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/02_Data/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/02_Data/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/03_SessionCookie/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/03_SessionCookie/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/04_JSP/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/04_JSP/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/05_Filter/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/05_Filter/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/06_EL_JSTL/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/06_EL_JSTL/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/07_HelloMVC2/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_servlet_kb5/07_HelloMVC2/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_spring_kb5/01_SpringMVC/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_spring_kb5/01_SpringMVC/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_spring_kb5/02_SpringDI_XML/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_spring_kb5/02_SpringDI_XML/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_spring_kb5/03_SpringDI_Annotation/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_spring_kb5/03_SpringDI_Annotation/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_spring_kb5/04_MybatisForJava_/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/work_space_spring_kb5/04_MybatisForJava_/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

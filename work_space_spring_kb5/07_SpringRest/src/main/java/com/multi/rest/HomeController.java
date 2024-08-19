@@ -1,4 +1,4 @@
-package com.multi.mvc;
+package com.multi.rest;
 
 import java.text.DateFormat;
 import java.util.Date;

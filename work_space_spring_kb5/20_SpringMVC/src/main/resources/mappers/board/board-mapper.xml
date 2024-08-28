@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.multi.mvc.board.model.mapper.BoardMapper">
+
+	<resultMap type="BoardCategory" id="boardCategoryResultMap">
+		<result property="type" column="type"/>
+		<result property="name" column="name"/>
+		<result property="level" column="level"/>
+		<result property="orderNo" column="orderno"/>
+	</resultMap>
+	
+	<resultMap type="Board" id="boardResultMap">
+		<result property="bno" column="bno"/>
+		<result property="mno" column="mno"/>
+		<result property="type" column="type"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="memberId" column="id"/>
+		<result property="memberName" column="name"/>
+		<result property="attachCount" column="attachcount"/>
+		<result property="readCount" column="readcount"/>
+		<result property="status" column="status"/>
+		<result property="createDate" column="create_date"/>
+		<result property="modifyDate" column="modify_date"/>
+	</resultMap>
+	
+	<resultMap type="AttachFile" id="attachFileResultMap">
+		<result property="fno" column="fno"/>
+		<result property="bno" column="bno"/>
+		<result property="originalFilename" column="original_filename"/>
+		<result property="renamedFilename" column="renamed_filename"/>
+		<result property="createDate" column="create_date"/>
+	</resultMap>
+
+	<resultMap type="BoardReply" id="boardReplyResultMap">
+		<result property="rno" column="rno" />
+		<result property="bno" column="bno" />
+		<result property="mno" column="mno" />
+		<result property="memberId" column="id" />
+		<result property="memberName" column="name" />
+		<result property="content" column="content" />
+		<result property="status" column="status" />
+		<result property="createDate" column="create_date" />
+		<result property="modifyDate" column="modify_date" />
+	</resultMap>
+	
+	
+	<!-- board 카테고리 가져오는 select문 -->
+	<select id="selectBoardCategory" resultMap="boardCategoryResultMap">
+		SELECT * FROM board_category ORDER BY orderno
+	</select>
+	
+	<!--
+	■ 리스트 구현 - 필수 2종 세트   	
+	selectBoardList : list를 뽑을때 사용하는데, 페이징, 검색 조건이 모두 포함된 동적 쿼리, 컬럼의 갯수는 꼭 보여줄 것만 선언 
+	selectBoardCount : selectBoardList와 쌍으로 갯수를 세오는 Count문, 검색조건이 selectBoardList 일치 해야함
+	-->
+	
+	<select id="selectBoardList" parameterType="BoardParam" resultMap="boardResultMap">
+		SELECT  b.bno, b.type, b.title, m.id, m.name, b.readcount, b.attachcount, b.create_date
+		FROM board b
+		JOIN member m on (b.mno = m.mno)
+		JOIN board_category c on (b.type = c.type)
+		WHERE 
+			b.status = 'Y' <!-- 1=1을 사용해도 무관  -->
+			<if test="typeList != null">
+				 AND B.TYPE IN 
+				<foreach  item="item" collection="typeList" open="(" separator="," close=")">
+				    #{item}
+				</foreach>
+			</if>
+			<if test="searchType == 'writer'">
+			    AND m.id LIKE '%${searchValue}%'
+			</if>
+			<if test="searchType == 'title'">
+			    AND b.title LIKE '%${searchValue}%'
+			</if>
+			<if test="searchType == 'content'">
+			    AND b.content LIKE '%${searchValue}%'
+			</if>
+		ORDER BY c.level, b.bno DESC LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="selectBoardCount" parameterType="BoardParam" resultType="int">
+		SELECT COUNT(*)
+		FROM board b
+		JOIN member m on (b.mno = m.mno)
+		JOIN board_category c on (b.type = c.type)
+		WHERE 
+			b.status = 'Y' <!-- 1=1을 사용해도 무관  -->
+			<if test="typeList != null">
+				 AND b.type IN
+				<foreach  item="item" collection="typeList" open="(" separator="," close=")">
+				    #{item}
+				</foreach>
+			</if>
+			<if test="searchType == 'writer'">
+			    AND m.id LIKE '%${searchValue}%'
+			</if>
+			<if test="searchType == 'title'">
+			    AND b.title LIKE '%${searchValue}%'
+			</if>
+			<if test="searchType == 'content'">
+			    AND b.content LIKE '%${searchValue}%'
+			</if>
+	</select>
+	
+	<!-- 상세보기 용도, 모든 인자를 가져와야한다. -->
+	<select id="selectBoardByNo" parameterType="int" resultMap="boardResultMap">
+		SELECT  
+			b.bno, b.type, m.id, m.name, b.title, b.content,
+			b.readcount, b.attachcount, b.create_date, b.modify_date
+		FROM board b
+		JOIN member m on (b.mno = m.mno)
+		WHERE b.status = 'Y' AND b.bno = #{bno}
+	</select>
+	
+	<!-- 게시판 insert용, selectKey(insert 이후의 key를 받아오는 쿼리문) 추가한 버전 -->
+	<insert id="insertBoard" parameterType="Board">
+		<selectKey keyProperty="bno" resultType="int" order="AFTER">
+			SELECT @@IDENTITY AS bno
+		</selectKey>
+		INSERT INTO board (bno, mno, type, title, content)
+			VALUES(0, #{mno}, #{type}, #{title}, #{content})
+	</insert>
+	
+	<update id="updateBoard" parameterType="Board">
+		UPDATE BOARD SET 
+			type=#{type}, title=#{title}, content=#{content}, modify_date = CURRENT_TIMESTAMP
+		WHERE bno = #{bno}
+	</update>
+	
+	<!-- 게시글 조회시 readCount 갱신용 -->
+	<update id="updateReadCount" parameterType="Board">
+		UPDATE board SET
+			readcount = #{readCount}
+		WHERE bno = #{bno}
+	</update>
+	
+	<!-- 게시글 삭제용 update문 -->
+	<update id="deleteBoard" parameterType="int">
+		UPDATE board SET
+			status = 'N'
+		WHERE bno = #{bno}
+	</update>
+	
+	
+	<!-- 파일 첨부 관련 DML -->
+	
+	<!-- 파일 가져오기 -->
+	<select id="selectAttachFileByFno" parameterType="int" resultMap="attachFileResultMap">
+		SELECT 
+			fno, bno, original_filename, renamed_filename, create_date FROM board_attach_file
+		WHERE fno = #{fno}
+	</select>
+	
+	<!-- 파일 리스트 -->
+	<select id="selectAttachFileByBno" parameterType="int" resultMap="attachFileResultMap">
+		SELECT 
+			fno, bno, original_filename, renamed_filename, create_date FROM board_attach_file
+		WHERE bno = #{bno}
+	</select>
+	
+	<!-- 파일 첨부 -->
+	<insert id="insertAttachFile" parameterType="AttachFile">
+		INSERT INTO board_attach_file (fno, bno, original_filename, renamed_filename, create_date)
+		VALUES(#{fno}, #{bno}, #{originalFilename}, #{renamedFilename}, DEFAULT)
+	</insert>
+	
+	<!-- 파일 첨부된 숫자 게시판 반영 -->
+	<update id="updateAttachFileCounter" parameterType="int">
+		UPDATE board
+		SET 
+			attachcount = (SELECT COUNT(*) FROM board_attach_file WHERE bno = #{bno})
+		WHERE bno = #{bno}
+	</update>
+	
+	<!-- 파일 삭제 -->
+	<delete id="deleteAttachFile" parameterType="int">
+		DELETE FROM board_attach_file WHERE fno = #{fno}
+	</delete>
+	
+	<!-- 댓글 등록 -->
+	<insert id="insertReply" parameterType="BoardReply">
+		INSERT INTO REPLY(
+			rno, bno, mno,
+			content, status, create_date, modify_date)
+		VALUES(
+			default, #{bno}, #{mno}, #{content}, 
+			default, default, default
+		)
+	</insert>
+	
+	<!-- 댓글 리스트 -->
+	<select id="selectReplyByBno" resultMap="boardReplyResultMap" parameterType="int">
+		SELECT 
+			r.rno, r.bno, r.content, m.id, m.name, r.create_date, r.modify_date
+		FROM reply r
+		JOIN member m on(r.mno = m.mno)
+		WHERE r.status='Y' AND bno = ${bno}
+		ORDER BY r.rno desc
+	</select>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteReply" parameterType="int">
+		DELETE FROM reply WHERE rno = #{rno}
+	</delete>
+
+</mapper>
+
+
+
+

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!-- Dao를 Mapper Interface로 대체 할 예정, namespace=Class의 풀네임 선언 필요 -->
+<mapper namespace="com.multi.mvc.member.model.mapper.MemberMapper">
+	<resultMap type="Member" id="memberResultMap">
+		<result property="mno" column="mno"/>
+		<result property="id" column="id"/>
+		<result property="password" column="password"/>
+		<result property="role" column="role"/>
+		<result property="name" column="name"/>
+		<result property="phone" column="phone"/>
+		<result property="email" column="email"/>
+		<result property="address" column="address"/>
+		<result property="hobby" column="hobby"/>
+		<result property="status" column="status"/>
+		<result property="enrollDate" column="enroll_date"/>
+		<result property="modifyDate" column="modify_date"/>
+	</resultMap>
+	
+	<select id="selectCount" resultType="int">
+		SELECT COUNT(*) FROM member
+	</select>
+	
+	<select id="selectAll" resultMap="memberResultMap" >
+		SELECT  
+			mno, id, password, role, name,
+		    phone, email, address, hobby, status,
+		    enroll_date, modify_date
+		FROM MEMBER
+	</select>
+	
+	<!-- PK(기본키)로 조회하는 쿼리 -->
+	<select id="selectMember" resultMap="memberResultMap" parameterType="int">
+		SELECT  
+			mno, id, password, role, name,
+		    phone, email, address, hobby, status,
+		    enroll_date, modify_date
+		FROM MEMBER WHERE MNO = #{mno}
+	</select>
+	
+	<!-- 로그인때 사용할 select문 -->
+	<select id="selectMemberById" resultMap="memberResultMap" parameterType="String" >
+		SELECT  
+			mno, id, password, role, name,
+		    phone, email, address, hobby, status,
+		    enroll_date, modify_date
+		FROM MEMBER WHERE ID = #{id} AND STATUS ='Y' 
+	</select>
+	
+	<insert id="insertMember" parameterType="Member" >
+		INSERT INTO MEMBER (
+		    mno, id, password, role, name,
+		    phone, email, address, hobby, status,
+		    enroll_date, modify_date
+		) VALUES(
+		    0, #{id}, #{password}, DEFAULT, #{name}, 
+		     #{phone}, #{email}, #{address}, #{hobby}, DEFAULT,
+		    DEFAULT, DEFAULT
+		)
+	</insert>
+	
+	<update id="updateMember">
+		UPDATE MEMBER SET 
+			name = #{name}, phone = #{phone}, email = #{email},
+		    address = #{address}, hobby = #{hobby}, modify_date = CURRENT_TIMESTAMP
+		WHERE mno = #{mno}
+	</update>
+	
+	 <update id="updatePwd" parameterType="map">
+	 	UPDATE member
+	 		SET password = #{password}
+ 		WHERE mno = #{mno}
+	 </update>
+	 
+	 <update id="deleteMember" parameterType="int">
+	 	UPDATE member
+	 		SET status = 'N'
+	 	WHERE mno = #{mno}
+	 </update>
+	
+</mapper>
+
+
+

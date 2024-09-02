@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.multi.mvc.board.mapper.BoardMapper">
+
+	<select id="selectAll" resultType="com.multi.mvc.board.vo.Board">
+		select * from board order by bno desc
+	</select>
+	
+	<select id="boardCount" resultType="long">
+		select count(*) from board
+	</select>
+	
+	<select id="selectByBno" parameterType="long" resultType="com.multi.mvc.board.vo.Board">
+		select * from board where bno = #{bno}
+	</select>
+	
+	<!-- 게시판 insert용, selectKey(insert 이후의 key를 받아오는 쿼리문) 추가한 버전 -->
+	<insert id="insertBoard" parameterType="com.multi.mvc.board.vo.Board">
+		<selectKey keyProperty="bno" resultType="long" order="AFTER">
+			select last_insert_id() as bno;
+		</selectKey>
+		insert into board (bno, title, content, writer)
+			values(default, #{title}, #{content}, #{writer})
+	</insert>
+	
+	<update id="updateBoard" parameterType="com.multi.mvc.board.vo.Board">
+		update board set
+			 title=#{title}, content=#{content}, modify_date = current_timestamp
+		where bno = #{bno}
+	</update>
+	
+	<update id="deleteBoard" parameterType="long">
+		delete from board where bno = #{bno}
+	</update>
+	
+
+</mapper>
+
+
+
+
